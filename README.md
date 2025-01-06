@@ -12,7 +12,7 @@ Supporting data and scripts for:
 - **Contact maps**: Two-chain configurations averaged to generate 2D contact maps and related statistics.
 
 ### IDP model dataset
-- **Global and challenge datasets**: Data includes features for phase separation prediction. Includes contact maps for sequences in challenge dataset.
+- **Global and challenge datasets**: Includes data for phase-separation predictors (B_22, Rg, variance and mean of contact maps, and Sk values). Includes contact maps for sequences in challenge dataset.
 
 ## Simulation and analysis scripts
 
