@@ -9,7 +9,7 @@ Supporting data and scripts for:
 ### HP model dataset
 - **Sequences**: polymer sequences of length 20 with varying hydrophobicity patterns.
 - **Phase-separation predictor data**: includes B_22, Rg, variance and mean of contact maps, and Sk values (power spectrum-derived statistics).
-- **Contact naps**: Two-chain configurations averaged to generate 2D contact maps and related statistics.
+- **Contact maps**: Two-chain configurations averaged to generate 2D contact maps and related statistics.
 
 ### IDP model dataset
 - **Global and challenge datasets**: Data includes features for phase separation prediction. Includes contact maps for sequences in challenge dataset.
