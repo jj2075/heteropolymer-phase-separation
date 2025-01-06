@@ -13,7 +13,7 @@ Supporting data and scripts for:
 
 ### IDP model dataset
 - **Global and challenge datasets**: Data includes features for phase separation prediction. Includes contact maps for sequences in challenge dataset.
-- 
+
 ## Simulation and analysis scripts
 
 - **HP model simulations**:
