@@ -1,0 +1,29 @@
+Colvarstrajfrequency    100000
+Colvarsrestartfrequency 1000000
+
+colvar {
+  name rcom
+  distance {
+    group1 { atomNumbersRange 1-20}
+    group2 { atomNumbersRange 21-40}
+  }
+  
+  upperboundary 17.0
+  lowerboundary 0.0
+  width 0.1
+}
+
+harmonicWalls {
+  name wall
+  colvars rcom
+  upperWalls 17.0
+  upperWallConstant 40.0
+
+}
+
+abf {
+  name abf_r
+  colvars rcom
+  outputFreq 100000
+  fullSamples 1000
+}

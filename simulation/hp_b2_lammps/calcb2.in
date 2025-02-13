@@ -1,0 +1,57 @@
+dimension   	3
+boundary	    m m m
+ 
+atom_style	    bond
+bond_style 	    fene
+pair_style      lj/cut 3.0
+pair_modify     shift yes
+special_bonds	fene
+neighbor	    2.0 bin
+variable        seed1 equal {random_number}
+
+read_data	polymer_init.data
+
+# Pair coeffs: 11 WCA, 12 WCA, 22 LJ
+pair_coeff      1 1 {epsilon} 1.0 1.12246204830937
+pair_coeff      1 2 {epsilon} 1.0 1.12246204830937
+pair_coeff      2 2 {epsilon} 1.0 3.0
+
+# Bond coeffs: Default for FENE potential
+bond_coeff	    1 30.0 1.5 {epsilon} 1.0
+
+fix             dynamics all langevin 1.0 1.0 1.0 ${seed1}
+fix             2 all nve
+
+compute         chunkmol all chunk/atom molecule
+compute         molcom all com/chunk chunkmol
+compute         molgyr all gyration/chunk chunkmol
+
+# dump      1 all movie 1000 test.avi type type size 1600 1600 zoom 1.
+# dump_modify   1 adiam 1 1.0 framerate 10.
+
+variable        k_spring equal 1
+variable        r0_com equal 10
+
+fix             springfix all spring/radial ${k_spring} ${r0_com} chunkmol molcom
+
+run             5000
+unfix           springfix
+
+fix abf all colvars colvars.inp tstat dynamics output
+
+thermo		    5000
+thermo_style	custom step time fmax temp pe ke
+
+# First run: 4e8 steps
+run            400000000
+write_restart  4e8.restart
+
+# Second run: 2e8 steps (cumulative: 6e8)
+run            200000000
+write_restart  6e8.restart
+
+# Third run: 2e8 steps (cumulative: 8e8)
+run            200000000
+write_restart  8e8.restart
+
+unfix abf

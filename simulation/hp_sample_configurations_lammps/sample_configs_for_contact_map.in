@@ -1,0 +1,39 @@
+dimension       3
+boundary        m m m
+
+atom_style      bond
+bond_style      fene
+pair_style      lj/cut 3.0
+pair_modify     shift yes
+special_bonds   fene
+neighbor        2.0 bin
+variable seed1 equal {random_number}
+variable timesteps equal 4e8
+variable timesteps equal 5e6
+
+read_restart    8e8.restart # restart file after ABF simulation
+
+# Pair coeffs: 11 WCA, 12 WCA, 22 LJ
+pair_coeff      1 1 {epsilon} 1.0 1.12246204830937
+pair_coeff      1 2 {epsilon} 1.0 1.12246204830937
+pair_coeff      2 2 {epsilon} 1.0 3.0
+
+# Bond coeffs: Default for FENE potential
+bond_coeff  1 30.0 1.5 {epsilon} 1.0
+
+fix             dynamics all langevin 1.0 1.0 1.0 ${seed1}
+fix             2 all nve
+
+fix abf all colvars colvars.inp tstat dynamics output
+
+variable        dump_freq equal 100000
+variable        dump_freq equal 10000
+
+variable        dump_file string configs/dump*.atom
+dump            my_dump all custom ${dump_freq} ${dump_file} id mol type x y z
+
+run             ${timesteps}
+
+# write_restart   sampling_configs.restart
+
+unfix abf

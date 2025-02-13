@@ -1,0 +1,161 @@
+dimension	    3
+boundary	    p p f 
+atom_style	    bond
+bond_style 	    fene
+pair_style      lj/cut 3.0
+pair_modify     shift yes
+special_bonds   fene
+neighbor	    2.0 bin
+units lj
+timestep        1e-5
+
+read_data       phase-0.dat
+
+pair_coeff      * * {epsilon} 1.0 1.12246204830937
+pair_coeff      2 2 {epsilon} 1.0 3.0
+
+bond_coeff      1 100.0 4.0 1.0 1.0
+
+variable dt equal 1.0e-5
+fix             1 all nvt temp 6.0 6.0 $(100.0*dt)
+velocity        all create 6.0 2023 mom yes rot yes dist gaussian
+fix             2 all deform 1 x final 0.0 120.0 y final 0.0 120.0 z final 0.0 240.0 units box
+
+compute         chunkmol all chunk/atom molecule
+compute         molgyr all gyration/chunk chunkmol
+variable        avgmolgyr equal ave(c_molgyr)
+
+thermo          5000
+thermo_style    custom step lx ly lz pxx pyy pzz fmax temp pe density v_avgmolgyr
+
+log             phase-0.log
+run 0
+
+###############################
+# initial fast deform at high T
+###############################
+
+fix             zwalls1 all wall/lj126 zhi EDGE 0.5 1.0 3.0 units box 
+fix             zwalls2 all wall/lj126 zlo EDGE 0.5 1.0 3.0 units box
+
+run	            100000
+
+timestep        1e-6
+unfix           1
+unfix           2
+unfix           zwalls1
+unfix           zwalls2
+
+
+fix             zwalls1 all wall/reflect zhi EDGE units box 
+fix             zwalls2 all wall/reflect zlo EDGE units box
+
+
+variable dt equal 1.0e-6
+fix             1 all nvt temp 5.0 5.0 $(100.0*dt)
+velocity        all create 5.0 2023 mom yes rot yes dist gaussian
+
+fix             2 all deform 1 x final 0.0 80.0 y final 0.0 80.0 z final 0. 120.0 units box
+
+run	            100000
+# write_dump all  custom compress-phase-0.atom id mol type xu yu zu
+# write_restart   compress-phase-0.restart
+
+
+###############################
+# temperature quench 
+###############################
+
+timestep        1e-8
+unfix           1
+unfix           2
+unfix           zwalls1
+unfix           zwalls2
+
+fix             zwalls1 all wall/reflect zhi EDGE units box 
+fix             zwalls2 all wall/reflect zlo EDGE units box
+
+variable dt equal 1.0e-8
+fix             1 all nvt temp 5.0 4.0 $(100.0*dt)
+velocity        all create 4.0 2023 mom yes rot yes dist gaussian
+
+fix             2 all deform 1 x final 0.0 20.0 y final 0.0 20.0 z final 0.0 36.0 units box
+
+run	            1000000
+
+###############################
+# condense
+###############################
+
+timestep        1e-7
+unfix           1
+unfix           2
+unfix           zwalls1
+unfix           zwalls2
+
+fix             zwalls1 all wall/reflect zhi EDGE units box 
+fix             zwalls2 all wall/reflect zlo EDGE units box
+variable dt equal 1.0e-7
+fix             1 all nvt temp 3.0 1.5 $(100.0*dt)
+velocity        all create 3.0 2023 mom yes rot yes dist gaussian
+
+run	            1000000
+write_dump all  custom condense-phase-0.atom id mol type xu yu zu
+write_restart   condense-phase-0.restart
+
+###############################
+# further compression at low T
+###############################
+timestep        1e-6
+unfix           1
+unfix           zwalls1
+unfix           zwalls2
+
+variable dt equal 1.0e-6
+fix             1 all nvt temp 1.5 1.5 $(100.0*dt)
+
+variable        pressdown equal ramp(zhi,zhi-5.0)
+variable        pressup equal ramp(zlo,zlo+5.0)
+fix             zwalls1 all wall/reflect zhi v_pressdown units box 
+fix             zwalls2 all wall/reflect zlo v_pressup units box 
+
+run	            1000000
+write_dump all  custom wall-phase-0.atom id mol type xu yu zu
+write_restart   wall-phase-0.restart
+
+###############################
+# relaxation
+###############################
+unfix           zwalls1
+unfix           zwalls2
+unfix           1
+
+timestep        1e-5
+
+# either change box size or put the wall in the correct postions 
+#variable        zhipos equal zhi-5.0
+#variable        zlopos equal zlo+5.0
+
+#print           "check for wall position zhi $(zhipos)"
+#print           "check for wall position zlo $(zlopos)"
+
+fix             zwalls1 all wall/reflect zhi $(zhi-5.0) units box 
+fix             zwalls2 all wall/reflect zlo $(zlo+5.0) units box 
+
+variable dt equal 1.0e-5
+fix             1 all nvt temp 1.5 1.0 $(100.0*dt)
+velocity        all create 1.5 2023 mom yes rot yes dist gaussian
+
+run         	1000000
+write_dump all  custom feq-phase-0.atom id mol type xu yu zu
+write_restart   feq-phase-0.restart
+
+timestep        1e-4
+unfix           1
+variable dt equal 1.0e-4
+fix             1 all nvt temp 1.0 1.0 $(100.0*dt)
+velocity        all create 1.0 2023 mom yes rot yes dist gaussian
+
+run         	2000000
+write_dump all  custom final-phase-0.atom id mol type xu yu zu
+write_restart   final-phase-0.restart

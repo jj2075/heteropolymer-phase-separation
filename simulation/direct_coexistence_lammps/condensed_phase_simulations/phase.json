@@ -1,0 +1,21 @@
+{
+  "N": 1,
+  "r": 2,
+  "components": {
+    "{sequence}": 1
+  },
+  "phases": {
+    "0": {
+      "{sequence}": 432.0
+    },
+
+    "1": {
+      "{sequence}": 432.0
+    }
+  },
+  "target_box_dim": [
+    20,
+    20,
+    20
+  ]
+}

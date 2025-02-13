@@ -1,0 +1,64 @@
+##############################################
+# Direct coexistence simulation at Lz = 180\sigma
+##############################################
+dimension       3
+boundary        p p p
+atom_style      bond
+bond_style      fene
+pair_style      lj/cut 3.0
+pair_modify     shift yes
+special_bonds   fene
+neighbor        2.0 bin
+units           lj
+timestep        1e-3
+
+# read initial slab configuration with Lz = 180\sigma
+read_data       starting-slab-before-cycling-lz-180.dat
+
+pair_coeff      1 1 {epsilon} 1.0 1.12246204830937
+pair_coeff      1 2 {epsilon} 1.0 1.12246204830937
+pair_coeff      2 2 {epsilon} 1.0 3.0
+bond_coeff     1 30.0 1.5 {epsilon} 1.0
+ 
+thermo          10000
+thermo_style    custom step lx ly lz pxx pyy pzz fmax temp pe density
+  
+write_dump      all custom starting_slab_configuration.atom id mol type x y z
+
+# Density profile setup
+compute         zbins all chunk/atom bin/1d z lower 1.0 units box
+compute         zbincounts all property/chunk zbins count
+fix             zbinave all ave/time 10 10 10000 c_zbincounts file coex_zbincounts.dat mode vector
+
+fix             1 all nvt temp 1.0 1.0 0.1
+
+##########################
+# Run simulation in segments
+##########################
+
+run 50000000  # First segment
+write_dump     all custom slab_simulation-0.atom id mol type x y z
+write_restart  slab_simulation-0.restart
+
+run 50000000  # Second segment
+write_dump     all custom slab_simulation-1.atom id mol type x y z
+write_restart  slab_simulation-1.restart
+
+run 50000000  # Third segment
+write_dump     all custom slab_simulation-2.atom id mol type x y z
+write_restart  slab_simulation-2.restart
+
+run 50000000  # Fourth segment
+write_dump     all custom slab_simulation-3.atom id mol type x y z
+write_restart  slab_simulation-3.restart
+
+run 30000000  # Fifth segment
+write_dump     all custom slab_simulation-4.atom id mol type x y z
+write_data     slab_simulation-4.dat pair ij
+write_restart  slab_simulation-4.restart
+
+run 30000000  # Final segment
+write_dump     all custom slab_simulation-5.atom id mol type x y z
+write_dump     all custom unwrapped_slab_simulation-5.atom id mol type xu yu zu
+write_data     slab_simulation-5.dat pair ij
+write_restart  slab_simulation-5.restart

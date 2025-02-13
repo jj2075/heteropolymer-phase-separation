@@ -1,0 +1,174 @@
+dimension       3
+boundary        p p p
+atom_style      bond
+bond_style      fene
+pair_style      lj/cut 3.0
+pair_modify     shift yes
+special_bonds   fene
+neighbor        2.0 bin
+units           lj
+variable        trial_num equal {trial_number}
+
+#################################################
+# This temp-cycles the initial phase in NVT
+#################################################
+
+read_restart    final-phase-0.restart
+
+change_box all boundary p p p
+
+# Pair coefficients 11 WCA, 12 WCA, 22 LJ
+pair_coeff      1 1 {epsilon} 1.0 1.12246204830937
+pair_coeff      1 2 {epsilon} 1.0 1.12246204830937
+pair_coeff      2 2 {epsilon} 1.0 3.0
+
+# bond_coeff      1 100.0 4.0 1.0 1.0
+bond_coeff      1 30.0 1.5 {epsilon} 1.0
+
+compute         chunkmol all chunk/atom molecule
+compute         molgyr all gyration/chunk chunkmol
+variable        avgmolgyr equal ave(c_molgyr)
+
+thermo          5000
+thermo_style    custom step lx ly lz pxx pyy pzz fmax temp pe density v_avgmolgyr
+
+###########################################
+# Temperature Cycle phase
+###########################################
+
+timestep        1e-5
+variable dt equal 1.0e-5
+
+compute 1 all pe
+variable natoms equal 8640
+variable avePE equal "c_1/v_natoms"
+fix 2 all ave/time 5000 1 5000 v_avePE file pe_temp-cycle-trial1.dat mode scalar
+
+fix nvt_0 all nvt temp 1.0 1.0 $(100.0*dt)
+velocity        all create 1.0 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_0
+
+write_dump all  custom temp-cycle-0.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-0.restart
+
+fix nvt_1 all nvt temp 1.0 1.5 $(100.0*dt)
+velocity        all create 1.0 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_1
+
+write_dump all  custom temp-cycle-1.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-1.restart
+
+fix nvt_2 all nvt temp 1.5 1.5 $(100.0*dt)
+velocity        all create 1.5 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_2
+
+write_dump all  custom temp-cycle-2.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-2.restart
+
+fix nvt_3 all nvt temp 1.5 1.0 $(100.0*dt)
+velocity        all create 1.5 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_3
+
+write_dump all  custom temp-cycle-3.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-3.restart
+
+fix nvt_4 all nvt temp 1.0 1.0 $(100.0*dt)
+velocity        all create 1.0 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_4
+
+write_dump all  custom temp-cycle-4.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-4.restart
+
+timestep        1e-4
+variable dt equal 1.0e-4
+
+fix nvt_5 all nvt temp 1.0 0.5 $(100.0*dt)
+velocity        all create 1.0 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_5
+
+write_dump all  custom temp-cycle-5.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-5.restart
+
+fix nvt_6 all nvt temp 0.5 0.5 $(100.0*dt)
+velocity        all create 0.5 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_6
+
+write_dump all  custom temp-cycle-6.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-6.restart
+
+fix nvt_7 all nvt temp 0.5 1.0 $(100.0*dt)
+velocity        all create 0.5 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_7
+
+write_dump all  custom temp-cycle-7.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-7.restart
+
+timestep        1e-4
+variable dt equal 1.0e-4
+
+fix nvt_8 all nvt temp 1.0 1.0 $(100.0*dt)
+velocity        all create 1.0 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_8
+
+write_dump all  custom temp-cycle-8.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-8.restart
+
+fix nvt_9 all nvt temp 1.0 1.5 $(100.0*dt)
+velocity        all create 1.0 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_9
+
+write_dump all  custom temp-cycle-9.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-9.restart
+
+fix nvt_10 all nvt temp 1.5 1.5 $(100.0*dt)
+velocity        all create 1.5 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_10
+
+write_dump all  custom temp-cycle-10.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-10.restart
+
+fix nvt_11 all nvt temp 1.5 1.0 $(100.0*dt)
+velocity        all create 1.5 2023 mom yes rot yes dist gaussian
+
+run 500000
+unfix nvt_11
+
+write_dump all  custom temp-cycle-11.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-11.restart
+
+fix nvt_12 all nvt temp 1.0 1.0 $(100.0*dt)
+velocity        all create 1.0 2023 mom yes rot yes dist gaussian
+
+run 100000
+
+compute cc1 all chunk/atom molecule
+compute myChunk all msd/chunk cc1
+fix 3 all ave/time 5000 1 5000 c_myChunk[*] file msd_temp-cycle-trial${trial_num}.dat mode vector
+
+run 10000000
+unfix nvt_12
+
+write_dump all  custom temp-cycle-trial${trial_num}-12.atom id mol type x y z
+write_restart   temp-cycle-trial${trial_num}-12.restart

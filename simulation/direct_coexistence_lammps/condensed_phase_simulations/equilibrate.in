@@ -1,0 +1,75 @@
+dimension       3
+boundary        p p p
+atom_style      bond
+bond_style      fene
+pair_style      lj/cut 3.0
+pair_modify     shift yes
+special_bonds   fene
+neighbor        2.0 bin
+units           lj
+variable        trial_num equal {trial_number}
+
+###################################################################################
+# Use final restart from temp-cycle and run until sufficient diffusion in Lx direction
+# i.e., system has reached equilibrium diffusion timescales
+###################################################################################
+
+read_restart    temp-cycle-trial${trial_num}-12.restart
+
+# Pair coefficients 11 WCA, 12 WCA, 22 LJ
+pair_coeff      1 1 {epsilon} 1.0 1.12246204830937
+pair_coeff      1 2 {epsilon} 1.0 1.12246204830937
+pair_coeff      2 2 {epsilon} 1.0 3.0
+
+bond_coeff      1 30.0 1.5 {epsilon} 1.0
+
+compute         chunkmol all chunk/atom molecule
+compute         molgyr all gyration/chunk chunkmol
+variable        avgmolgyr equal ave(c_molgyr)
+
+thermo          5000
+thermo_style    custom step lx ly lz pxx pyy pzz fmax temp pe density v_avgmolgyr
+
+################################################################################
+# Estimated 165M timesteps needed (~11.5 hours wall time at 4,000 timesteps/sec)
+# Split into chunks (e.g., 66M) to monitor diffusion
+################################################################################
+timestep        1e-3
+variable dt equal 1.0e-3
+
+compute 1 all pe
+variable natoms equal 8640
+variable avePE equal "c_1/v_natoms"
+fix 2 all ave/time 5000 1 5000 v_avePE file pe_equilibrate_trial${trial_num}.dat mode scalar
+
+fix nvt_0 all nvt temp 1.0 1.0 $(100.0*dt)
+velocity        all create 1.0 2023 mom yes rot yes dist gaussian
+
+compute cc1 all chunk/atom molecule
+compute myChunk all msd/chunk cc1
+fix 3 all ave/time 5000 1 5000 c_myChunk[*] file msd_equilibrate-trial${trial_num}.dat mode vector
+
+run 66000000
+
+write_dump all  custom equilibrate_trial${trial_num}-0.atom id mol type x y z
+write_restart   equilibrate_trial${trial_num}-0.restart
+
+run 33000000
+
+write_dump all  custom equilibrate_trial${trial_num}-1.atom id mol type x y z
+write_restart   equilibrate_trial${trial_num}-1.restart
+
+run 33000000
+
+write_dump all  custom equilibrate_trial${trial_num}-2.atom id mol type x y z
+write_restart   equilibrate_trial${trial_num}-2.restart
+
+run 16500000
+
+write_dump all  custom equilibrate_trial${trial_num}-3.atom id mol type x y z
+write_restart   equilibrate_trial${trial_num}-3.restart
+
+run 16500000
+
+write_dump all  custom equilibrate_trial${trial_num}-4.atom id mol type x y z
+write_restart   equilibrate_trial${trial_num}-4.restart

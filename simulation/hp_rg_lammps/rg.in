@@ -1,0 +1,33 @@
+dimension       3
+boundary        m m m
+
+atom_style      bond
+bond_style      fene
+pair_style      lj/cut 3.0
+pair_modify     shift yes
+special_bonds   fene
+neighbor        2.0 bin
+variable seed1 equal 3491
+variable timesteps equal 8e7
+
+read_data	polymer_init.data
+
+# Pair coeffs: 11 WCA, 12 WCA, 22 LJ
+pair_coeff      1 1 {epsilon} 1.0 1.12246204830937
+pair_coeff      1 2 {epsilon} 1.0 1.12246204830937
+pair_coeff      2 2 {epsilon} 1.0 3.0
+
+# Bond coeffs: Default for FENE potential
+bond_coeff    	1 30.0 1.5 {epsilon} 1.0
+
+fix             dynamics all langevin 1.0 1.0 1.0 ${seed1}
+fix             2 all nve
+
+group chain id 1:20
+compute         Rg chain gyration
+fix             1 chain ave/time 100 1 100 c_Rg file rg.dat
+
+thermo_style    custom step time fmax temp pe ke c_Rg
+thermo          1000
+
+run		${timesteps}
