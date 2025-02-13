@@ -21,19 +21,19 @@ Supporting data and scripts for:
 
 ## Simulation and analysis scripts
 
-### two-chain simulations for HP polymers (`simulation/hp_b2_lammps`)
+#### two-chain simulations for HP polymers (`simulation/hp_b2_lammps`)
 - Run adaptive biasing force (ABF) simulations to calculate PMFs and compute \( B_{22} \). The output `out.pmf` from the ABF simulation represents the bias applied during the ABF simulation; the true PMF is computed from this using `get_pmf.py`.
 
-### single-chain simulations for HP polymers (`simulation/hp_rg_lammps`)
+#### single-chain simulations for HP polymers (`simulation/hp_rg_lammps`)
 - Compute \( R_g \) over time for each sequence to extract the average \( R_g \) used as a feature.
 
-### two-chain simulations for IDP polymers (`simulation/idp_b2_lammps`)
+#### two-chain simulations for IDP polymers (`simulation/idp_b2_lammps`)
 - Example scripts and data files for running two-chain simulations for IDPs to compute B2 and generate contact maps.
 
-### configuration sampling (`simulation/hp_sample_configurations_lammps`)
+#### configuration sampling (`simulation/hp_sample_configurations_lammps`)
 - Extract decorrelated configurations within a center-of-mass (COM) distance range for generating two-chain contact maps.
 
-### direct coexistence simulations (`simulation/direct_coexistence`)
+#### direct coexistence simulations (`simulation/direct_coexistence`)
 - Scripts for generating and analyzing slab geometries to classify phase behavior.
 
 ---
