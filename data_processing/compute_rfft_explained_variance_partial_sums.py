@@ -156,15 +156,6 @@ def k(kx, ky):
   """Compute the wavenumber k given kx and ky."""
   return np.sqrt(kx**2 + ky**2)
 
-def check_if_fft_fully_populated(matrix):
-    missing_elements = np.sum(matrix == 0)
-    total_elements = matrix.size
-    print(f"Total elements: {total_elements}, Missing elements: {missing_elements}")
-    if missing_elements > 0:
-        print("Warning: The reconstructed FFT matrix is not fully populated!")
-        return False
-    return True
-
 def order_dict_by_k(unique_indices_and_mappings):
     print("unique_indices_and_mappings.items(): ", unique_indices_and_mappings.keys())
     """Order the dictionary by k."""
@@ -401,9 +392,6 @@ def reconstruct_full_fft2_from_rfft2(full_fourier_transform, rfft2_matrix, origi
     with open(mse_output_path, 'w') as mse_file:
         mse_file.write(f'{mse_between_curves:.6e}\n')
         
-    # validate that the reconstructed FFT is fully populated
-    is_fully_populated = check_if_fft_fully_populated(full_matrix)
-    
     return full_matrix, modes_used_for_partial_approximations, cumulative_fourier_matrices, cumulative_powers, relative_explained_variances, relative_explained_variances_sorted_by_power, mse_between_curves, approximations, mse_list
 
 # ================================= PLOT EXPLAINED VARIANCE vs. k =================================
@@ -431,7 +419,7 @@ def plot_explained_variance(k_list, relative_explained_variances):
     ax.xaxis.set_tick_params(labelsize=16)
 
     plt.tight_layout()
-    #plt.show()
+    plt.show()
 
 # ======================== PLOT EXPLAINED VARIANCE (increasing k and descending power) vs. mode index ==========================
 
