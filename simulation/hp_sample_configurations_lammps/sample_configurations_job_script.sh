@@ -25,8 +25,8 @@ export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 # Generalized paths for data and simulation scripts
 data_dir="<path-to-data-files>"                     # Directory containing epsilon values and sequence information
-epsilon_file="$data_dir/combined_epsilon_400.txt"   # File with seqID and corresponding epsilon values
-seqs_file="$data_dir/b2_400_combined_seqs-ps.lst"  # File with seqID and sequence data
+epsilon_file="$data_dir/epsilon.csv"                # File with seqID and corresponding epsilon values
+seqs_file="$data_dir/b2_400_combined_seqs-ps.lst"   # File with seqID and sequence data
 simulation_b2_dir="<path-to-simulation-scripts>/b2" # Directory for B2-matching simulation scripts
 sample_configs_dir="<path-to-sampling-configs>"     # Base directory containing template input file for LAMMPS
 output_dir="$sample_configs_dir/b2-400"             # B2-matched dataset dir to store sampled configs in b2-400/{seqid} subdir
@@ -36,12 +36,12 @@ ScratchDir="/tmp/${SLURM_JOB_ID}"
 mkdir -p ${ScratchDir}
 
 line_number=$((SLURM_ARRAY_TASK_ID))
-subdir_line=$(sed -n "${line_number}p" "$seqs_file")
 
-# Extract seqID and sequence from the current line
-seqid=$(echo "$subdir_line" | awk '{print $1}')
-sequence=$(echo "$subdir_line" | awk '{print $2}')
-epsilon=$(awk -v id="$seqid" '$1 == id { print $2 }' "$epsilon_file")
+# Get seqID, sequence, and epsilon for the current job from a CSV file
+subdir_line=$(sed -n "${line_number}p" "$epsilon_file")
+seqid=$(echo "$subdir_line" | awk -F ',' '{print $1}')      # seqid in the first column
+sequence=$(echo "$subdir_line" | awk -F ',' '{print $2}')  # sequence in the second column
+epsilon=$(echo "$subdir_line" | awk -F ',' '{print $4}')   # epsilon value in the fourth column
 
 echo "seqID: $seqid"
 echo "sequence: $sequence"

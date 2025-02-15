@@ -11,17 +11,16 @@
 set -euf -o pipefail
 
 # This script runs a longer NVT equilibration step for each sequence after temperature cycling
-
 seq_index=${SLURM_ARRAY_TASK_ID}
 data_dir="<path-to-data-files>"  # dir containing epsilon and sequence data
-epsilon_file="$data_dir/epsilon.txt"  # file with seqID and epsilon values
+epsilon_file="$data_dir/epsilon.csv"  # file with seqID and epsilon values
 seqs_file="$data_dir/seqs-ps.lst"  # file with sequence IDs and sequences
 
-# Get seqID, sequence, and epsilon for the current job
-sequence_line=$(sed -n "${seq_index}p" "$seqs_file")
-seqid=$(echo "$sequence_line" | awk '{print $1}')
-sequence=$(echo "$sequence_line" | awk '{print $2}')
-epsilon=$(awk -v id="$seqid" '$1 == id {print $2}' "$epsilon_file")
+# Get seqID, sequence, and epsilon for the current job from CSV file
+subdir_line=$(sed -n "${line_number}p" "$epsilon_file")
+seqid=$(echo "$subdir_line" | awk -F ',' '{print $1}')      # seqid in the first column
+sequence=$(echo "$subdir_line" | awk -F ',' '{print $2}')  # sequence in the second column
+epsilon=$(echo "$subdir_line" | awk -F ',' '{print $4}')   # epsilon value in the fourth column
 
 echo "Sequence ID: $seqid"
 echo "Sequence: $sequence"

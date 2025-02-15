@@ -25,7 +25,7 @@ simulation_b2_dir="<path_to_simulation_scripts>"  # Dir with LAMMPS simulation s
 rg_dir="${data_dir}/b2-400/feature-data/rg"       # Dir for pre-computed Rg data
 
 # File with epsilon values (H-H interaction strength) for B2-matched sequences (2nd col: epsilon value)
-epsilon_file="${data_dir}/combined_epsilon_400.txt"
+epsilon_file="${data_dir}/epsilon.csv"
 
 # List of sequences
 seqs_file="${data_dir}/b2_400_combined_seqs-ps.lst"
@@ -33,11 +33,11 @@ seqs_file="${data_dir}/b2_400_combined_seqs-ps.lst"
 trial_number=$1
 line_number=$((SLURM_ARRAY_TASK_ID))
 
-line=$(sed -n "${line_number}p" "$epsilon_file")
-seqid=$(echo "$line" | awk '{print $1}')
-epsilon=$(echo "$line" | awk '{print $2}')
-
-sequence=$(awk -v id="$seqid" '$1 == id {print $2}' "$seqs_file")
+# Get seqID, sequence, and epsilon for the current job from CSV file
+subdir_line=$(sed -n "${line_number}p" "$epsilon_file")
+seqid=$(echo "$subdir_line" | awk -F ',' '{print $1}')     # seqid in the first column
+sequence=$(echo "$subdir_line" | awk -F ',' '{print $2}')  # sequence in the second column
+epsilon=$(echo "$subdir_line" | awk -F ',' '{print $4}')   # epsilon value in the fourth column
 
 echo "Simulation for seqID: $seqid"
 echo "Sequence: $sequence"

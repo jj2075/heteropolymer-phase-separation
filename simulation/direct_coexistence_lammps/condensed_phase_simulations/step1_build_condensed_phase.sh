@@ -14,15 +14,15 @@
 set -euf -o pipefail
 
 line_number=${SLURM_ARRAY_TASK_ID}
-data_dir="<path-to-data-files>"  # dir containing epsilon and sequence data
-epsilon_file="$data_dir/epsilon.txt"  # file with seqID and corresponding epsilon values
+data_dir="<path-to-data-files>"  # dir containing e psilon and sequence data
+epsilon_file="$data_dir/epsilon.csv"  # file with seqID and corresponding epsilon values
 seqs_file="$data_dir/seqs-ps.lst"  # file with sequence IDs and sequences
 
-# Get seqID and epsilon for the current job
+# Get seqID, sequence, and epsilon for the current job from CSV file
 subdir_line=$(sed -n "${line_number}p" "$epsilon_file")
-seqid=$(echo "$subdir_line" | awk '{print $1}')
-epsilon=$(echo "$subdir_line" | awk '{print $2}')
-sequence=$(awk -v id="$seqid" '$1 == id {print $2}' "$seqs_file")
+seqid=$(echo "$subdir_line" | awk -F ',' '{print $1}')      # seqid in the first column
+sequence=$(echo "$subdir_line" | awk -F ',' '{print $2}')  # sequence in the second column
+epsilon=$(echo "$subdir_line" | awk -F ',' '{print $4}')   # epsilon value in the fourth column
 
 echo "Sequence ID: $seqid"
 echo "Sequence: $sequence"

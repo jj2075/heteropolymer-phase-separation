@@ -4,7 +4,6 @@
 
 sampling_configs_dir="<path_to_sampling_configs>"  # Dir containing sampling configuration scripts
 data_dir="<path_to_data_files>"                   # Dir containing sequence and epsilon data
-epsilon_file="$data_dir/combined_epsilon_400.txt"  # File with epsilon values for B2-matching sequences
 seqs_file="$data_dir/b2_400_combined_seqs-ps.lst" # File with sequence IDs
 
 while read -r seq_id _; do

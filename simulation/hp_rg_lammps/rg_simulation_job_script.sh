@@ -22,14 +22,15 @@ line_number=$((SLURM_ARRAY_TASK_ID))
 
 # Generalized paths
 data_dir="<path_to_data_files>" # Dir containing data files for sequences and epsilon values
-epsilon_file="$data_dir/combined_epsilon_1000.txt"  # Contains seqID and corresponding epsilon values
+epsilon_file="$data_dir/epsilon.csv"  # Contains seqID and corresponding epsilon values
 seqs_file="$data_dir/b2_1000_combined_seqs-ps.lst"  # Contains sequence IDs
 current_simulation_rg_dir="<path-to-simulation_scripts>/rg"  # Directory for Rg simulations
 
+# Get seqID, sequence, and epsilon for the current job from CSV file
 line=$(sed -n "${line_number}p" "$epsilon_file")
-seqid=$(echo "$line" | awk '{print $1}')
-epsilon=$(echo "$line" | awk '{print $2}')
-sequence=$(awk -v id="$seqid" '$1 == id {print $2}' "$seqs_file")
+seqid=$(echo "$subdir_line" | awk -F ',' '{print $1}')     # seqid in the first column
+sequence=$(echo "$subdir_line" | awk -F ',' '{print $2}')  # sequence in the second column
+epsilon=$(echo "$subdir_line" | awk -F ',' '{print $4}')   # epsilon value in the fourth column
 
 echo "seqID: $seqid"
 echo "sequence: $sequence"
