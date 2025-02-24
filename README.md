@@ -11,21 +11,21 @@ Supporting data and scripts for:
 
 ### HP model dataset
 - **Sequences**: length-20 heteropolymer sequences with varying hydrophobicity patterns
-- **Features**: \( B_{22}, R_g, \text{Var}(C), \text{Mean}(C), S_k \) (Fourier-derived statistics)
+- **Features**: B_22, Rg, Var(C), Mean(C), S_k (Fourier-derived statistics)
 - **Contact maps**: contact maps from two-chain simulations
 
 ### IDP dataset
-- **`global_dataset.csv`**: 2034 sequences for the global IDP dataset with \( B_{22} \) and \( R_g \) values
-- **`idp_challenge_dataset.csv`**: Challenge dataset of 75 sequences with sequence-level features (e.g., charge fraction) and computed phase-separation predictors (\( B_{22}, R_g, \text{Var}(C), \text{Mean}(C), S_k \)), and contact maps
+- **`global_dataset.csv`**: 2034 sequences for the global IDP dataset with B_22 and Rg values
+- **`idp_challenge_dataset.csv`**: Challenge dataset of 75 sequences with sequence-level features (e.g., charge fraction) and computed phase-separation predictors (B_22, Rg, Var(C), Mean(C), S_k), and contact maps
 ---
 
 ## Simulation and analysis scripts
 
 #### two-chain simulations for HP polymers (`simulation/hp_b2_lammps`)
-- Run adaptive biasing force (ABF) simulations to calculate PMFs and compute \( B_{22} \). The output `out.pmf` from the ABF simulation represents the bias applied during the ABF simulation; the true PMF is computed from this using `get_pmf.py`.
+- Run adaptive biasing force (ABF) simulations to calculate PMFs and compute B_22. The output `out.pmf` from the ABF simulation represents the bias applied during the ABF simulation; the true PMF is computed from this using `get_pmf.py`.
 
 #### single-chain simulations for HP polymers (`simulation/hp_rg_lammps`)
-- Compute \( R_g \) over time for each sequence to extract the average \( R_g \) used as a feature.
+- Compute Rg over time for each sequence to extract the average Rg used as a feature.
 
 #### two-chain simulations for IDP polymers (`simulation/idp_b2_lammps`)
 - Example scripts and data files for running two-chain simulations for IDPs to compute B2 and generate contact maps.
@@ -61,7 +61,7 @@ Supporting data and scripts for:
 
 ## reproducing results
 
-1. **Run simulations**: use job scripts in `simulation/` to run single-chain \( R_g \) and two-chain ABF simulations.  
+1. **Run simulations**: use job scripts in `simulation/` to run single-chain Rg and two-chain ABF simulations.  
 2. **Process data**: use `data_processing/` to build contact maps, compute Fourier features, and extract PMFs.  
 3. **Train models**: use `analysis/logistic_regression_model.py` to train logistic regression models on extracted features.
 
