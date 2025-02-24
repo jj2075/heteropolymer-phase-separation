@@ -33,15 +33,17 @@ Supporting data and scripts for:
 #### configuration sampling (`simulation/hp_sample_configurations_lammps`)
 - Extract decorrelated configurations within a center-of-mass (COM) distance range for generating two-chain contact maps.
 
-#### direct coexistence simulations (`simulation/direct_coexistence`)
+#### direct coexistence simulations (`simulation/hp_direct_coexistence_lammps`)
 - Scripts for generating and analyzing slab geometries to classify phase behavior.
 
+#### eos simulations (`simulation/idp_eos_lammps`)
+- Example scripts and data files for running EOS simulations at fixed density to classify phase behavior.
 ---
 
 ## data processing and feature extraction (`data_processing`)
 - **`build_hp_contact_map.py`** and **`build_idp_contact_map.py`**: Build two-chain contact maps from sampled configurations.  
 - **`get_pmf.py`**: Calculate the PMF from `out.pmf` by removing the applied bias.  
-- **`compute_rfft_explained_variance_partial_sums.py`**: Perform 2D Fourier decomposition of contact maps and compute explained variance and partial sums of power spectrum.
+- **`rfft.py`**: Perform 2D Fourier decomposition of contact maps and compute explained variance and partial sums of power spectrum.
 
 ---
 

@@ -1,0 +1,55 @@
+# VARIABLES
+variable        data_name      index 	sys.data
+variable        settings_name  index    sys.settings
+variable        coords_freq    index    1000
+variable        Tinit          index    200
+variable        T0	       index    300
+variable        Tf	       index    300
+variable        Tdamp          index    1000
+variable vseed1 index 1
+variable vseed2 index 2
+
+#===========================================================
+# SYSTEM DEFINITION
+#===========================================================
+units		real	# m = grams/mole, x = Angstroms, E = kcal/mole
+dimension	3	# 3 dimensional simulation
+newton		on	# use Newton's 3rd law
+boundary	p p p	# shrink wrap conditions
+atom_style	full    # molecular + charge
+
+#===========================================================
+# FORCE FIELD DEFINITION
+#===========================================================
+pair_style     ljlambda 0.1 0.0 35.0 # uses Ashbaugh-hatch potential from Mittal
+bond_style     hybrid harmonic
+special_bonds  fene
+angle_style    none
+dihedral_style none
+kspace_style   none
+improper_style none                 # no impropers
+dielectric 80
+
+#===========================================================
+# SETUP SIMULATIONS
+#===========================================================
+# READ IN COEFFICIENTS/COORDINATES/TOPOLOGY
+read_data ${data_name} 
+include ${settings_name}
+
+# SET RUN PARAMETERS
+neighbor 3.5 multi
+comm_style tiled              #could be removed
+timestep   10
+run_style	verlet 		# Velocity-Verlet integrator
+
+#===========================================================
+# PERFORM ENERGY MINIMIZATION
+#===========================================================
+minimize 1.0e-4 1.0e-6 5000 50000000
+velocity all create ${Tinit} ${vseed1} mom yes rot yes
+fix dynamics all nve/limit 0.1
+fix lang     all langevin ${T0} ${Tf} ${Tdamp} ${vseed2} 
+run 200000
+write_data      restart.data pair ij
+unfix dynamics
