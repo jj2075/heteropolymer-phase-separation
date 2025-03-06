@@ -10,13 +10,12 @@ from collections import OrderedDict
     Script for analyzing symmetrized contact maps using the 2D discrete real Fourier transform (RFFT2).
     Routines include iteratively adding Fourier modes in order of increasing wavenumber to compute
     partial sums of the power spectrum, approximating the contact map via the inverse RFFT2,
-    and computing the explained variance (S^k/S) for each approximation.
-    Additionally, the script computes the variance divergence index,
-    defined as the mean-squared difference (MSD) between two explained variance (EV) curves:
-    one with modes ordered by increasing wavenumber and the other by descending power.
-    This statistic quantifies how variance is distributed across modes: small values
-    indicate concentration in low-wavenumber modes, while large values suggest
-    significant higher wavenumber contributions. Saves MSD values and cumulative powers to output files.
+    and computing the explained variance (EV) for each approximation, defined as S^k/S, where S^k
+    is the cumulative power up to the kth unique mode, accounting for symmetries, and S is the total power.
+    Additionally, the script computes the variance divergence index (VDI), defined as the mean-squared difference
+    between the wavenumber-ordered EV and power-ordered EV distributions. The VDI is a measure of the deviation
+    of a given power spectrum from a typical contact map power spectrum in which the lower wavenumber
+    (longer wavelength) modes dominate. Script saves VDI values and cumulative powers for each sequence to output files. 
 """
 
 def get_contact_map(contact_map_path):
