@@ -73,8 +73,8 @@ See the [*logistic regression models (`logistic_regression`)*](#logistic-regress
 ## logistic regression models (`logistic_regression`)
 
 - **`model_feature_mappings/`**: Folder containing structured mappings that define which combinations of feature arrays (e.g., `rg.npy` and `b2.npy`) are used as inputs to specific logistic regression models (e.g., `"rg-b2"`).
-- **train_test_any_non_split_sum_model.py**: Script for training and evaluating a logistic regression model using any feature combination (e.g., B2, Rg, contact map variance, etc.). Can be applied to both HP and IDP datasets using the specified feature set.
-- **train_test_a_split_sum_model.py**: cript for training and evaluating a split-sum logistic regression model using any feature combination (e.g., B2, Rg, contact map variance, etc.). Applicable to any dataset where B2 is used as a feature, for either HP or IDP models; easily adaptable for B2-matched datasets.
+- **`train_test_any_non_split_sum_model.py`**: Script for training and evaluating a logistic regression model using any feature combination (e.g., B2, Rg, contact map variance, etc.). Can be applied to both HP and IDP datasets using the specified feature set.
+- **`train_test_a_split_sum_model.py`**: cript for training and evaluating a split-sum logistic regression model using any feature combination (e.g., B2, Rg, contact map variance, etc.). Applicable to any dataset where B2 is used as a feature, for either HP or IDP models; easily adaptable for B2-matched datasets.
 
 ### example job scripts for running models
 - **`run_best_non_split_sum_model_hp_b2_mixed.sh`**:
