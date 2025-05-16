@@ -9,7 +9,7 @@ Supporting data and scripts for:
 
 ## Everything you need to predict phase separation from two-chain contact maps
 Summary of key features of our end-to-end pipeline:
-### 1. Generate contact-map features
+### 1. Generate contact-map features for logistic regression model training
 For a given two-chain contact map, you can easily extract all necessary features for training logistic regression models.
 See the [*data processing and feature extraction (`data_processing`)*](#data-processing-and-feature-extraction-data_processing) section below.
 
