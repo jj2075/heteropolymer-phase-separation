@@ -74,7 +74,7 @@ See the [*logistic regression models (`logistic_regression`)*](#logistic-regress
 
 - **`model_feature_mappings/`**: Folder containing structured mappings that define which combinations of feature arrays (e.g., `rg.npy` and `b2.npy`) are used as inputs to specific logistic regression models (e.g., `"rg-b2"`).
 - **`train_test_any_non_split_sum_model.py`**: Script for training and evaluating a logistic regression model using any feature combination (e.g., B2, Rg, contact map variance, etc.). Can be applied to both HP and IDP datasets using the specified feature set.
-- **`train_test_a_split_sum_model.py`**: cript for training and evaluating a split-sum logistic regression model using any feature combination (e.g., B2, Rg, contact map variance, etc.). Applicable to any dataset where B2 is used as a feature, for either HP or IDP models; easily adaptable for B2-matched datasets.
+- **`train_test_a_split_sum_model.py`**: Script for training and evaluating a split-sum logistic regression model using any feature combination (e.g., B2, Rg, contact map variance, etc.). Applicable to any dataset where B2 is used as a feature, for either HP or IDP models; easily adaptable for B2-matched datasets.
 
 ### example job scripts for running models
 - **`run_best_non_split_sum_model_hp_b2_mixed.sh`**:
@@ -102,16 +102,16 @@ Runs the best-performing non-split-sum model on the IDP challenge set (using fou
 - **`sequences/`**: Sequence datasets and associated feature data.
   - Note: Sequence IDs between B2-matched datasets do not necessarily align. The datasets share most sequences; a few sequences that did not exhibit clear phase separation or aggregation in our direct-coexistence simulations at that B2 value were excluded from the dataset.
 - **`simulation/`**: Job scripts and input files for running LAMMPS simulations.  
-- **`data_processing/`**: Scripts for processing single-chain radius of gyration timestep data, computing contact maps and extracting Fourier-spectrum features.
-- **`logistic_regression/`**: Logistic regression model training and evaluation.
+- **`data_processing/`**: Scripts to process single-chain radius of gyration timestep data, computing contact maps and extracting Fourier-spectrum features.
+- **`logistic_regression/`**: Scripts to train and test logistic regression models and analyze results.
 
 ---
 
 ## Reproducing results
 
-1. **Run simulations**: use scripts in `simulation/` to run single-chain Rg and two-chain ABF simulations.  
-2. **Process data**: use scripts in `data_processing/` to generate potential of mean force data, build contact maps from two-chain snapshot data, and compute contact-map features used for training logistic regression models.
-3. **Train models**: use scripts in `logistic_regression/` to train and test logistic regression models.
+1. **Run simulations**: use scripts in `simulation/` to run single-chain radius of gyration and two-chain ABF simulations.  
+2. **Process data**: use scripts in `data_processing/` to generate potential of mean force (PMF) data, build contact maps from two-chain snapshot data, and compute contact-map features used for training logistic regression models.
+3. **Train models**: use scripts in `logistic_regression/` to train and test logistic regression models and analyze results.
 
 ---
 
