@@ -22,7 +22,7 @@ Assess how well logistic regression models models predict phase separation — a
 - Evaluating test performance over randomized train/test splits for a polymer dataset
 - Reporting a model's prediction accuracy for any given contact map
 - Analyzing performance trends across models and preprocessing parameters (e.g., contact map cutoff distance)
-See the [*logistic regression models (`logistic_regression`)*](#logistic-regression-models-logistic_regression) section for analysis tools.
+See [**4.4. analyze model performance**](#44-analyze-model-performance) for analysis scripts.
 
 ---
 
@@ -60,37 +60,74 @@ See the [*logistic regression models (`logistic_regression`)*](#logistic-regress
 ---
 
 ## data processing and feature extraction (`data_processing`)
-- **`build_hp_contact_map.py`** and **`build_idp_contact_map.py`**: Build two-chain contact maps from sampled configurations.  
-- **`get_pmf.py`**: Calculate the PMF from `out.pmf` by removing the applied bias.  
-- **`process_contact_map_statistics.py`**: Compute and save the mean and variance of contact maps.
-- **`process_contact_map_fourier_outputs.py`**: Perform 2D Fourier decomposition of contact maps and compute and save the explained variance and partial sums of power spectrum.
-- **`generate_contact_map_descriptors.py`**: The key driver script that takes a contact map as input and computes and saves contact map features/descriptors (mean, variance, explained variance, partial power sums) required for training a logistic regression model for phase separation prediction. This script calls `process_contact_map_statistics.py` and `process_contact_map_fourier_outputs.py` to perform computations.
-- **`run_generate_contact_map_descriptors.sh`**: Bash script that automates the generation of contact map-based features for multiple contact maps by running `generate_contact_map_descriptors.py` for each contact map.
-- **`consolidate_feature_arrays.py`**: Python script that aggregates feature data (e.g., mean, variance, partial sums) across sequences into feature-specific 2D NumPy arrays as {seq_id, feature_value}, streamlining data for model training.
-- **`run_feature_array_consolidation.sh`**: a bash script that automates `consolidate_feature_arrays.py` for multiple datasets and features.
+Recommended order for running data processing scripts:
+
+### 1. calculate potential of mean force from two-chain simulations
+- **get_pmf.py**: takes `out.pmf` from an abf two-chain simulation (in `simulation/hp_b2_lammps` or `simulation/idp_b2_lammps`) and calculates the true potential of mean force (pmf) by removing the applied bias; the resulting pmf is used to define the well for configuration sampling.
+
 ---
 
-## logistic regression models (`logistic_regression`)
+> **note:**  
+> after extracting the PMF, use it to define the PMF well and extract decorrelated two-chain configurations within a center-of-mass (com) distance range.
+> see `simulation/hp_sample_configurations_lammps` for scripts to do this.  
+> these configurations are required for contact map construction in the next step.
 
-- **`model_feature_mappings/`**: Folder containing structured mappings that define which combinations of feature arrays (e.g., `rg.npy` and `b2.npy`) are used as inputs to specific logistic regression models (e.g., `"rg-b2"`).
-- **`train_test_any_non_split_sum_model.py`**: Script for training and evaluating a logistic regression model using any feature combination (e.g., B2, Rg, contact map variance, etc.). Can be applied to both HP and IDP datasets using the specified feature set.
-- **`train_test_a_split_sum_model.py`**: Script for training and evaluating a split-sum logistic regression model using any feature combination (e.g., B2, Rg, contact map variance, etc.). Applicable to any dataset where B2 is used as a feature, for either HP or IDP models; easily adaptable for B2-matched datasets.
+---
 
-### example job scripts for running models
-- **`run_best_non_split_sum_model_hp_b2_mixed.sh`**:
-Runs the best-performing non-split-sum logistic regression model on the HP B2-mixed dataset across 185 randomized train/test splits.
-(This is not the best overall model reported in the paper. In the paper, results were reported for cutoff = 3.0 σ.)
-- **`run_split_sum_model_hp_b2_mixed.sh`**:
-Runs the split-sum logistic regression model on the HP B2-mixed dataset using power spectrum partitions across 185 randomized train/test splits.
-(This IS the best-performing model for the HP B2-mixed dataset reported in the paper. In the paper, results were reported for cutoff = 3.0 σ.)
-- **`run_best_non_split_sum_model_idp.sh`**:
-Runs the best-performing non-split-sum model on the IDP challenge set (using four features: B2, single-chain Rg, contact-map mean, and contact-map variance).
-(This performs equivalently to the split-sum model as the best-performing model for the IDP challenge set. In the paper, results were reported for cutoff = 24 Å.)
+### 2. build contact maps from sampled configurations
 
-### analysis tools
-- **`analyze_logistic_regression_model_results.py`**: Given a trained model, computes average classification accuracy across randomized test sets. Optional: for a given contact map ID, report  classification accuracy.
-- **`run_analysis_of_logistic_regression_model_results.py`**: Wrapper script to automate model evaluation across multiple datasets and models.
-- **`model_accuracy_vs_cutoff_distance.py`**: Evaluates how model performance changes as a function of the contact map cutoff distance—a useful sensitivity analysis.
+- **build_hp_contact_map.py** and **build_idp_contact_map.py**: build two-chain contact maps from the sampled configurations.
+
+---
+
+### 3. extract contact map features for model training
+
+#### 3.1. compute and save contact map features
+
+- **generate_contact_map_descriptors.py**: computes and saves contact map features (mean, variance, explained variance, partial power sums) needed for phase separation prediction. This script calls:
+  - **process_contact_map_statistics.py**: computes mean and variance of contact maps.
+  - **process_contact_map_fourier_outputs.py**: performs 2d Fourier decomposition, computes explained variance and partial sums of the power spectrum.
+
+#### 3.2. automate feature extraction for multiple contact maps
+
+- **run_generate_contact_map_descriptors.sh**: automates running `generate_contact_map_descriptors.py` for multiple contact maps.
+
+#### 3.3. consolidate features for a single dataset
+
+- **consolidate_feature_arrays.py**: aggregates feature data (mean, variance, partial sums, etc.) across sequences into feature-specific 2D NumPy arrays `{seq_id, feature_value}`, streamlining data for model training.
+
+#### 3.4. automate feature consolidation for multiple datasets
+
+- **run_feature_array_consolidation.sh**: automates `consolidate_feature_arrays.py` for multiple datasets and features.
+
+---
+
+### 4. train and analyze logistic regression models (`logistic_regression`)
+
+#### 4.1. create model-feature mappings for input
+
+- **model_feature_mappings/**: directory containing pre-defined structured mappings that define which combinations of feature arrays (e.g., `rg.npy` and `b2.npy`) are used as inputs to specific logistic regression models (e.g., `"rg-b2"`).
+
+#### 4.2. train and evaluate a model
+
+- **train_test_any_non_split_sum_model.py**: train and evaluate a logistic regression model using any feature combination (e.g., B2, Rg, contact-map variance, etc.). Works for both HP and IDP datasets.
+- **train_test_a_split_sum_model.py**: train and evaluate a split-sum logistic regression model using any feature combination, for HP or IDP datasets where B2 is a feature.
+
+#### 4.3. run job scripts
+Three example job scripts for running models:
+- **run_best_non_split_sum_model_hp_b2_mixed.sh**: runs the best-performing non-split-sum logistic regression model on the HP B2-mixed dataset across 185 randomized train/test splits.
+  (Note: This is not the best overall model reported in the paper. In the paper, results were reported for cutoff = 3.0 σ.)
+- **run_split_sum_model_hp_b2_mixed.sh**: runs the split-sum logistic regression model on the HP B2-mixed dataset using power spectrum partitions across 185 randomized train/test splits.
+  (This IS the best-performing model for the HP B2-mixed dataset reported in the paper; results reported for cutoff = 3.0 σ.)
+- **run_best_non_split_sum_model_idp.sh**: runs the best-performing non-split-sum model on the IDP challenge set (using four features: B2, single-chain Rg, contact-map mean, and contact-map variance).
+  (This performs equivalently to the split-sum model as the best-performing model for the IDP challenge set. In the paper, results were reported for cutoff = 24 Å.)
+
+#### 4.4. analyze model performance
+
+- **analyze_logistic_regression_model_results.py**: given a trained model, compute average classification accuracy across randomized test sets. Optional: for a given contact map ID, report average classification accuracy.
+- **run_analysis_of_logistic_regression_model_results.py**: automate model evaluation across multiple datasets and models.
+- **model_accuracy_vs_cutoff_distance.py**: evaluate how model performance changes as a function of the contact map cutoff distance—a useful sensitivity analysis.
+
 ---
 
 ## repository structure
