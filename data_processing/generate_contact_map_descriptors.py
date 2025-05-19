@@ -17,7 +17,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="Generate statistical descriptors and Fourier outputs for phase separation prediction.")
     parser.add_argument('--seqid', type=int, required=True, help="Sequence ID (e.g., 5)")
     parser.add_argument('--model', type=str, required=True, choices=['hp', 'idp'], help="Model type: hp or idp")
-    parser.add_argument('--b2_value', type=str, required=False, choices=['1000', '400'], help="B2 value for HP (required if model is hp)")
+    parser.add_argument('--b2_value', type=str, required=False, choices=['1000', '400'], help="B2 value for HP (required if model is HP)")
     parser.add_argument('--cutoff', type=float, required=True, help="Cutoff distance (float for HP, integer for IDP)")
     
     args = parser.parse_args()

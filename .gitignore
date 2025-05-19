@@ -1,0 +1,6 @@
+contact_maps/hp_b2_400/cutoff_2.0_sigma/
+contact_maps/hp_b2_400/cutoff_4.0_sigma/
+contact_maps/hp_b2_1000/cutoff_2.0_sigma/
+contact_maps/hp_b2_1000/cutoff_4.0_sigma/
+logistic_regression/model_results/
+*slurm*

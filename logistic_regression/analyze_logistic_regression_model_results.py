@@ -39,7 +39,7 @@ def analyze_non_split_sum(model_dir, test_split_id, save_auc=False):
                 true_labels.append(true)
                 predicted_labels.append(pred)
 
-    avg_auc = round(mean(aucs), 2)
+    avg_auc = round(mean(aucs), 3)
     stderr_auc = round(stdev(aucs) / sqrt(len(aucs)), 3)
 
     if save_auc:

@@ -544,12 +544,12 @@ def main():
     ordered_dict_unique_indices_and_mappings = order_dict_by_k(unique_indices_and_mappings)
     k_list = [k(x[0], x[1]) for x in ordered_dict_unique_indices_and_mappings.keys()]
 
-    plot_explained_variance(k_list, explained_variances_k_ordered)
-    plot_explained_variance_comparison(explained_variances_k_ordered_filtered, explained_variances_power_ordered, msd_between_curves)
+    #plot_explained_variance(k_list, explained_variances_k_ordered)
+    #plot_explained_variance_comparison(explained_variances_k_ordered_filtered, explained_variances_power_ordered, msd_between_curves)
 
     # Plot partial Fourier spectra and approximations
-    plot_partial_fourier_spectra(cumulative_fourier_matrices, full_fourier_transform, plot_indices=[1, 2, 3, -1])
-    plot_cmap_approximations(approximations, modes_used_for_partial_approximations, plot_indices=[1, 2, 3, -1])
+    #plot_partial_fourier_spectra(cumulative_fourier_matrices, full_fourier_transform, plot_indices=[1, 2, 3, -1])
+    #plot_cmap_approximations(approximations, modes_used_for_partial_approximations, plot_indices=[1, 2, 3, -1])
 
 if __name__ == "__main__":
     main()

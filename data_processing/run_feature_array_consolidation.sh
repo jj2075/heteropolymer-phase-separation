@@ -10,7 +10,7 @@ seq_list_idp="$source_dir/sequences/idp_challenge_dataset.csv"
 
 # Define contact cutoff distances for each model
 HP_CUTOFFS=("2.0" "2.5" "3.0" "3.5" "4.0")
-IDP_CUTOFFS=("12" "16" "20" "24" "28" "32")
+IDP_CUTOFFS=("16" "20" "24" "28" "32")
 
 # STEP 1: Consolidate feature numpy arrays for each B2 value from raw data
 b2_value_400=400
@@ -66,7 +66,7 @@ for cutoff in "${IDP_CUTOFFS[@]}"; do
         --cutoff_distance "${cutoff}"
 done
 
-# STEP 2: Combine feature arrays for B2-matched datasets in order to train model on mixed B2 data
+# STEP 2: For HP model only - combine two feature arrays for two B2-matched datasets in order to train model on mixed B2 data
 combined_output_dir="feature_npy_arrays/hp_b2_mixed"
 mkdir -p "$combined_output_dir"
 

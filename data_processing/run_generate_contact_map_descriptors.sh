@@ -2,7 +2,7 @@
 
 # Define contact cutoff distances for each model
 HP_CUTOFFS=("2.0" "2.5" "3.0" "3.5" "4.0")
-IDP_CUTOFFS=("08" "12" "16" "20" "24" "28" "32")
+IDP_CUTOFFS=("16" "20" "24" "28" "32")
 
 print_section_header() {
     echo ""

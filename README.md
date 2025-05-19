@@ -82,13 +82,13 @@ Recommended order for running data processing scripts:
 
 ### 3. extract contact map features for model training
 
-#### 3.1. compute and save contact map features
+#### 3.1. compute and save contact map features (for one contact map)
 
 - **generate_contact_map_descriptors.py**: computes and saves contact map features (mean, variance, explained variance, partial power sums) needed for phase separation prediction. This script calls:
   - **process_contact_map_statistics.py**: computes mean and variance of contact maps.
   - **process_contact_map_fourier_outputs.py**: performs 2d Fourier decomposition, computes explained variance and partial sums of the power spectrum.
 
-#### 3.2. automate feature extraction for multiple contact maps
+#### 3.2. automate 3.1 for multiple contact maps
 
 - **run_generate_contact_map_descriptors.sh**: automates running `generate_contact_map_descriptors.py` for multiple contact maps.
 
@@ -124,10 +124,17 @@ Three example job scripts for running models:
 
 #### 4.4. analyze model performance
 
-- **analyze_logistic_regression_model_results.py**: given a trained model, compute average classification accuracy across randomized test sets. Optional: for a given contact map ID, report average classification accuracy.
-- **run_analysis_of_logistic_regression_model_results.py**: automate model evaluation across multiple datasets and models.
-- **model_accuracy_vs_cutoff_distance.py**: evaluate how model performance changes as a function of the contact map cutoff distance—a useful sensitivity analysis.
+##### 4.4.1. evaluate model classification accuracy
 
+- **analyze_logistic_regression_model_results.py**: Compute average classification accuracy across randomized test sets for a given trained model. Optionally, report average accuracy for a specific contact map ID.
+
+##### 4.4.2. automate evaluation across datasets and models
+
+- **run_analysis_of_logistic_regression_model_results.py**: Automate model evaluation across multiple datasets and models.
+
+##### 4.4.3. run sensitivity analysis for contact map cutoff distance
+
+- **model_accuracy_vs_cutoff_distance.py**: Evaluate how model performance changes as a function of the contact map cutoff distance.
 ---
 
 ## repository structure
@@ -146,9 +153,9 @@ Three example job scripts for running models:
 
 ## Reproducing results
 
-1. **Run simulations**: use scripts in `simulation/` to run single-chain radius of gyration and two-chain ABF simulations.  
-2. **Process data**: use scripts in `data_processing/` to generate potential of mean force (PMF) data, build contact maps from two-chain snapshot data, and compute contact-map features used for training logistic regression models.
-3. **Train models**: use scripts in `logistic_regression/` to train and test logistic regression models and analyze results.
+1. **Run simulations**: Use scripts in `simulation/` to run single-chain, two-chain, configuration sampling, and coexistence/equation-of-state simulations for HP and IDP polymers.
+2. **Process data and extract features**: Use scripts in `data_processing/` to generate potential of mean force (PMF) data, build contact maps from two-chain snapshot data, and compute contact-map features used for training logistic regression models.
+3. **Build and evaluate predictive models**: Use scripts in `logistic_regression/` to train and test logistic regression models and analyze results.
 
 ---
 

@@ -26,7 +26,7 @@ for cutoff in hp_cutoffs:
   --save_auc"""
         commands.append(cmd)
 
-# IDP b2-rg-mean-var model, split-sum model has same performance)
+# IDP b2-rg-mean-var model
 idp_cutoffs = ["16", "20", "24", "28", "32"]
 for cutoff in idp_cutoffs:
     cmd = f"""python3 analyze_logistic_regression_model_results.py \\
@@ -34,6 +34,19 @@ for cutoff in idp_cutoffs:
   --seq_ps_file "{seq_ps_file_idp}" \\
   --save_auc"""
     commands.append(cmd)
+
+# IDP split-sum model
+idp_cutoffs = ["20", "24", "28"]
+for cutoff in idp_cutoffs:
+    for combo in combo_names_hp:
+        cmd = f"""python3 analyze_logistic_regression_model_results.py \\
+  --model_results_dir "{base_dir}/split_sum_models/idp_challenge_set/cutoff_{cutoff}" \\
+  --seq_ps_file "{seq_ps_file_idp}" \\
+  --split_sum \\
+  --combo_name "{combo}" \\
+  --save_auc"""
+        commands.append(cmd)
+
 
 import subprocess
 for cmd in commands:

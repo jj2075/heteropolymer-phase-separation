@@ -6,7 +6,8 @@
 #SBATCH --mem-per-cpu=200M         # memory per cpu core
 #SBATCH --time=00:30:00            # job run time limit (hh:mm:ss)
 
-# IDP contact distance cutoff used in the paper (24 Angstroms)
+# Train model using contact-map features from contact maps
+# using cutoff of 24 Angstroms (the IDP contact distance cutoff used in our paper)
 cutoff_distance=24
 
 # Paths for inputs and outputs
